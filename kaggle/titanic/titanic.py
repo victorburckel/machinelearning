@@ -7,11 +7,32 @@ Created on Mon Aug 28 20:46:08 2017
 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn import preprocessing
 from sklearn import model_selection
 from sklearn import linear_model
 from sklearn import metrics
 from sklearn import pipeline
+
+def plot_learning_curve(estimator, X, y):
+    plt.figure()
+    plt.title('Learning curve')
+    plt.xlabel("Training examples")
+    plt.ylabel("Score")
+    train_sizes, train_scores, test_scores = model_selection .learning_curve(estimator, X, y, train_sizes=np.linspace(.1, 1.0, 5))
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+    plt.grid()
+
+    plt.fill_between(train_sizes, train_scores_mean - train_scores_std, train_scores_mean + train_scores_std, alpha=0.1, color="r")
+    plt.fill_between(train_sizes, test_scores_mean - test_scores_std, test_scores_mean + test_scores_std, alpha=0.1, color="g")
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="r", label="Training score")
+    plt.plot(train_sizes, test_scores_mean, 'o-', color="g", label="Cross-validation score")
+
+    plt.legend(loc="best")
+    return plt
 
 
 if __name__ == '__main__':
@@ -36,6 +57,9 @@ if __name__ == '__main__':
     estimator = model_selection.GridSearchCV(pipe, dict(logistic__C=np.logspace(-4, 4, 9)))
     estimator.fit(X_train, y_train)
     print(estimator.best_params_)
+    
+    # Plot the learning curve
+    plot_learning_curve(estimator.best_estimator_, X_train, y_train)
     
     # Estimate the prediction on the test dataset
     y_test_est = estimator.best_estimator_.predict(X_test)
