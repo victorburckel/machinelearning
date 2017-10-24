@@ -1,0 +1,5 @@
+notMNIST_large*
+notMNIST_small*
+.idea
+*.pickle
+.ipynb_checkpoints
